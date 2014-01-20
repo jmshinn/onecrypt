@@ -1,0 +1,30 @@
+{
+	"name": "onecrypt",
+	"version": "0.0.0",
+	"description": "No-decision encryption",
+	"main": "./lib/onecrypt",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/jmshinn/onecrypt.git"
+	},
+	"keywords": ["crypto", "hash", "aes", "sha256"],
+	"author": {
+		"name": "Jason Shinn",
+		"email": "jason.shinn@cablesandkits.com"
+	},
+	"bugs": {
+		"url": "https://github.com/jmshinn/onecrypt/issues"
+	},
+	"homepage": "https://github.com/jmshinn/onecrypt",
+	"devDependencies": {
+		"nodeunit": ">0.0.0",
+		"eyes": ">0.0.0"
+	},
+	"dependencies": {
+		"bcrypt": "0.7.x",
+		"scrypt": "2.0.x"
+	},
+	"engines": {
+		"node": "0.10.x"
+	}
+}
