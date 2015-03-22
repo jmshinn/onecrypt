@@ -40,14 +40,14 @@ Whither onecrypt?
 Using encryption effectively is a bit like a scavenger hunt:
 
 > If you should desire security
-
+>
 > Then you must find these answers three
-
+>
 > And when you fail I'll laugh at thee
-
+>
 > Your efforts undone by `ECB`
 
-Security is tough.  node.js provides a fairly comprehensive library for security and cryptography in the form of the built-in ['crypto'](http://nodejs.org/api/crypto.html) module.  The problem with comprehensive tools is that they give you lots of rope with which to hang yourself.
+Security is tough.  node.js provides a fairly comprehensive library for security and cryptography in the form of the built-in [`crypto`](http://nodejs.org/api/crypto.html) module.  The problem with comprehensive tools is that they give you lots of rope with which to hang yourself.
 
 The reason security is tough is because there are bunches of options which can be combined in an extraordinary number of ways.  Innocuous sounding things like "salt" and "padding" seem to be superfluous, but getting them wrong will open up critical flaws in your implementation, and could compromise your actual security completely.
 
