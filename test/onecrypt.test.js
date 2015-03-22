@@ -4,6 +4,8 @@ var crypto = require('crypto');
 
 var onecrypt = require('../lib/onecrypt');
 
+onecrypt.TEST = true;
+
 var key;
 var mackey;
 
@@ -52,7 +54,7 @@ exports.keygen = {
 
 exports.symmetric = {
 	"encrypt/decrypt": function (test) {
-		test.expect(5);
+		test.expect(9);
 
 		var result1 = onecrypt.encipher(message, key, mackey);
 		var result2 = onecrypt.encipher(message, key, mackey);
@@ -63,9 +65,27 @@ exports.symmetric = {
 
 		var plain1 = onecrypt.decipher(result1[2], key, mackey, result1[0], result1[1]);
 		var plain2 = onecrypt.decipher(result2[2], key, mackey, result2[0], result2[1]);
-
 		test.equal(message, plain1.toString());
 		test.equal(message, plain2.toString());
+
+		var badmac = new Buffer(result1[0]);
+		var badiv = new Buffer(result1[1]);
+		var badct = new Buffer(result1[2]);
+
+		badmac[0] += 1;
+		badiv[0] += 1;
+		badct[0] += 1;
+
+		var macerr = onecrypt.decipher(result1[2], key, mackey, badmac, result1[1]);
+		var iverr = onecrypt.decipher(result1[2], key, mackey, result1[0], badiv);
+		var cterr = onecrypt.decipher(badct, key, mackey, result1[0], result1[1]);
+
+		var testerr = new Error('error');
+
+		test.deepEqual(macerr, testerr, 'changing a byte in the mac leads to an error');
+		test.deepEqual(iverr, testerr, 'changing a byte in the iv leads to an error');
+		test.deepEqual(cterr, testerr, 'changing a byte in the ciphertext leads to an error');
+		test.ok(macerr.message == 'Message failed to authenticate' && iverr.message == macerr.message && cterr.message == macerr.message, 'all the messages should be the same');
 
 		test.done();
 	}
@@ -165,6 +185,20 @@ exports.kdfs = {
 			});
 		});
 	},
+	/*"bcrypt - find length limit": function (test) {
+		test.expect();
+
+		var kdf = new onecrypt.kdf(null, 'bcrypt');
+
+		// practical limits reside somewhere between 51 and 72, depending on implementation
+		for (var i=71; i < 74; i++) {
+			// this only works with a modified function that checks two password lengths with the same salt
+			var pass = kdf.encrypt(Array(i+1).join('a'));
+			var result = kdf.verify(Array(i+1).join('a'), pass);
+			if (!result) throw new Error(i+' did not decrypt right');
+		}
+		test.done();
+	},*/
 	"kdf: pbkdf2": function (test) {
 		test.expect(1);
 
@@ -204,10 +238,13 @@ exports.kdfs = {
 	"internal pbkdf2": function (test) {
 		test.expect(1);
 
+		var _pbkdf2Slow = require('../lib/kdf')._pbkdf2Slow;
+
 		var salt = crypto.randomBytes(16);
 		var iterations = 10000; // use 10000 iterations, because our slow algorithm chokes on much more than that unless used in specific scenarios
 		var byte_length = 32;
-		var pass1 = onecrypt._pbkdf2Slow('sha1-onecrypt', password, salt, iterations, byte_length);
+		// because we set TEST, this will bypass the internal function, otherwise our slow func would recognize and pass off
+		var pass1 = _pbkdf2Slow('sha1-onecrypt', password, salt, iterations, byte_length);
 		var pass2 = crypto.pbkdf2Sync(password, salt, iterations, byte_length);
 
 		test.equal(pass1.toString('base64'), pass2.toString('base64'), 'our algorithm should produce the same output as the built-in provided the same input');

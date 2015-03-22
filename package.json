@@ -1,8 +1,11 @@
 {
 	"name": "onecrypt",
-	"version": "0.0.2",
+	"version": "0.0.4",
 	"description": "No-decision encryption",
 	"main": "./lib/onecrypt",
+	"scripts": {
+		"test": "nodeunit test/onecrypt.test.js"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/jmshinn/onecrypt.git"
@@ -22,7 +25,7 @@
 	},
 	"dependencies": {
 		"bcrypt": "0.7.x",
-		"scrypt": "2.0.x"
+		"scrypt": "4.0.x"
 	},
 	"engines": {
 		"node": "0.10.x"
